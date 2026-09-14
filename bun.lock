@@ -45,8 +45,8 @@
         "@midnight-ntwrk/midnight-js-network-id": "4.1.1",
       },
     },
-    "ui": {
-      "name": "@proof-relief/ui",
+    "interface": {
+      "name": "@proof-relief/interface",
       "version": "0.1.0",
       "dependencies": {
         "@midnight-ntwrk/dapp-connector-api": "4.0.1",
@@ -283,7 +283,7 @@
 
     "@proof-relief/contract": ["@proof-relief/contract@workspace:contract"],
 
-    "@proof-relief/ui": ["@proof-relief/ui@workspace:ui"],
+    "@proof-relief/interface": ["@proof-relief/interface@workspace:interface"],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.8", "", { "os": "android", "cpu": "arm" }, "sha512-tN5aztYkKCte4i5SIrrz5yK/HMjEuCqCSCJa418jOV8tZ1cBY3YF2otxB1ktPxzsLA1BeTqwapK0bfjxNvHJVw=="],
 

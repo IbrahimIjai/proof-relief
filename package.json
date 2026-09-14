@@ -12,11 +12,11 @@
   "workspaces": [
     "contract",
     "cli",
-    "ui"
+    "interface"
   ],
   "scripts": {
     "compact": "bun run --filter @proof-relief/contract compact",
-    "build": "bun run --filter @proof-relief/contract build && bun run --filter @proof-relief/ui build",
+    "build": "bun run --filter @proof-relief/contract build && bun run --filter @proof-relief/interface build",
     "test": "bun run --filter @proof-relief/contract test",
     "typecheck": "bun run --filter '*' typecheck",
     "proof-server": "docker compose -f proof-server.yml up"
