@@ -7,7 +7,10 @@ import type { Ledger } from './managed/proof-relief/contract/index.js';
  */
 export type ProofReliefPrivateState = {
   readonly adminSecretKey?: Uint8Array;
+  readonly issuerSecretKey?: Uint8Array;
 };
+
+type Context = WitnessContext<Ledger, ProofReliefPrivateState>;
 
 const required = <T>(value: T | undefined, name: string): T => {
   if (value === undefined) {
@@ -17,10 +20,13 @@ const required = <T>(value: T | undefined, name: string): T => {
 };
 
 export const witnesses = {
-  adminSecretKey: ({
-    privateState,
-  }: WitnessContext<Ledger, ProofReliefPrivateState>): [ProofReliefPrivateState, Uint8Array] => [
+  adminSecretKey: ({ privateState }: Context): [ProofReliefPrivateState, Uint8Array] => [
     privateState,
     required(privateState.adminSecretKey, 'adminSecretKey'),
+  ],
+
+  issuerSecretKey: ({ privateState }: Context): [ProofReliefPrivateState, Uint8Array] => [
+    privateState,
+    required(privateState.issuerSecretKey, 'issuerSecretKey'),
   ],
 };

@@ -73,4 +73,9 @@ export class ProofReliefSimulator {
     this.context = this.contract.impureCircuits.setIssuerStatus(this.context, issuerId, approved).context;
     return this.ledger();
   }
+
+  issueCredential(commitment: Uint8Array): Ledger {
+    this.context = this.contract.impureCircuits.issueCredential(this.context, commitment).context;
+    return this.ledger();
+  }
 }

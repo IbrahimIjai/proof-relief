@@ -25,7 +25,12 @@ export ledger campaigns: Map<Bytes<32>, Campaign>;
 export ledger approvedIssuers: Map<Bytes<32>, Boolean>;
 export ledger consumedNullifiers: Set<Bytes<32>>;
 
+// Leaves are H(issuerId, credentialCommitment). Historic so a path proven against
+// an older root stays valid after later issuance.
+export ledger credentials: HistoricMerkleTree<16, Bytes<32>>;
+
 witness adminSecretKey(): Bytes<32>;
+witness issuerSecretKey(): Bytes<32>;
 
 constructor(salt: Bytes<32>) {
   admin = disclose(adminPublicKey(adminSecretKey()));
@@ -63,10 +68,46 @@ export circuit setIssuerStatus(issuerId: Bytes<32>, approved: Boolean): [] {
   approvedIssuers.insert(disclose(issuerId), disclose(approved));
 }
 
+// The commitment hides every credential attribute; only the issuer identity is disclosed.
+export circuit issueCredential(commitment: Bytes<32>): [] {
+  const issuerId = disclose(issuerPublicKey(issuerSecretKey()));
+  assert(issuerApproved(issuerId), "Issuer is not approved");
+  credentials.insert(disclose(credentialLeaf(issuerId, commitment)));
+}
+
 circuit assertAdmin(): [] {
   assert(disclose(adminPublicKey(adminSecretKey()) == admin), "Caller is not the admin");
 }
 
+circuit issuerApproved(issuerId: Bytes<32>): Boolean {
+  return approvedIssuers.member(issuerId) && approvedIssuers.lookup(issuerId);
+}
+
 export pure circuit adminPublicKey(sk: Bytes<32>): Bytes<32> {
   return persistentHash<Vector<2, Bytes<32>>>([pad(32, "proof-relief:admin:v1"), sk]);
+}
+
+export pure circuit issuerPublicKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "proof-relief:issuer:v1"), sk]);
+}
+
+// What the holder hands to the issuer. The issuer never learns holderSecret.
+export pure circuit holderPublicKey(holderSecret: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "proof-relief:holder-pk:v1"), holderSecret]);
+}
+
+export pure circuit credentialCommitment(
+  region: Bytes<32>,
+  income: Uint<64>,
+  householdSize: Uint<16>,
+  nonce: Bytes<32>,
+  holderPk: Bytes<32>
+): Bytes<32> {
+  return persistentHash<[Bytes<32>, Bytes<32>, Uint<64>, Uint<16>, Bytes<32>, Bytes<32>]>(
+    [pad(32, "proof-relief:credential:v1"), region, income, householdSize, nonce, holderPk]
+  );
+}
+
+export pure circuit credentialLeaf(issuerId: Bytes<32>, commitment: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([pad(32, "proof-relief:leaf:v1"), issuerId, commitment]);
 }
