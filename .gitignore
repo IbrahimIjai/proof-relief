@@ -13,7 +13,8 @@ coverage/
 # Compact compiler output (regenerate with `npm run compact`)
 managed/
 
-# Midnight local state
+# Midnight local state (wallet seeds, secrets, demo credentials)
+cli/.state/
 midnight-level-db/
 logs/
 

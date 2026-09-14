@@ -4,6 +4,9 @@ import { setNetworkId } from '@midnight-ntwrk/midnight-js/network-id';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
+/** Gitignored directory for per-network deployment records, secrets and demo credentials. */
+export const stateDir = path.resolve(currentDir, '..', '.state');
+
 export const contractConfig = {
   privateStateStoreName: 'proof-relief-private-state',
   zkConfigPath: path.resolve(currentDir, '..', '..', 'contract', 'src', 'managed', 'proof-relief'),
