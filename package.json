@@ -19,11 +19,19 @@
     "build": "bun run --filter @proof-relief/contract build && bun run --filter @proof-relief/interface build",
     "test": "bun run --filter @proof-relief/contract test",
     "typecheck": "bun run --filter '*' typecheck",
-    "proof-server": "docker compose -f proof-server.yml up"
+    "proof-server": "docker compose -f proof-server.yml up -d",
+    "relief": "bun run --cwd cli start",
+    "standalone:up": "bun run --cwd cli standalone:up",
+    "standalone:down": "bun run --cwd cli standalone:down"
   },
   "devDependencies": {
     "@types/node": "^24.13.4",
     "typescript": "6.0.3",
     "vitest": "4.1.11"
+  },
+  "overrides": {
+    "@midnight-ntwrk/ledger-v8": "8.1.0",
+    "@midnight-ntwrk/onchain-runtime-v3": "3.0.0",
+    "@midnight-ntwrk/compact-runtime": "0.16.0"
   }
 }
