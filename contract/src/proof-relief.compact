@@ -15,6 +15,16 @@ export struct Campaign {
   claimCount: Uint<64>;
 }
 
+// Held only by the beneficiary. Enters circuits exclusively through the credential() witness.
+export struct Credential {
+  holderSecret: Bytes<32>;
+  region: Bytes<32>;
+  income: Uint<64>;
+  householdSize: Uint<16>;
+  nonce: Bytes<32>;
+  issuerId: Bytes<32>;
+}
+
 // Commitment to the admin secret key. Admin circuits re-derive and compare it.
 export ledger admin: Bytes<32>;
 
@@ -31,6 +41,8 @@ export ledger credentials: HistoricMerkleTree<16, Bytes<32>>;
 
 witness adminSecretKey(): Bytes<32>;
 witness issuerSecretKey(): Bytes<32>;
+witness credential(): Credential;
+witness credentialPath(leaf: Bytes<32>): MerkleTreePath<16, Bytes<32>>;
 
 constructor(salt: Bytes<32>) {
   admin = disclose(adminPublicKey(adminSecretKey()));
@@ -75,6 +87,41 @@ export circuit issueCredential(commitment: Bytes<32>): [] {
   credentials.insert(disclose(credentialLeaf(issuerId, commitment)));
 }
 
+// Proves: the hidden credential was issued by an approved issuer, belongs to the
+// prover, and satisfies the campaign rules. Then consumes the campaign nullifier
+// and increments the claim count together; any failed assertion does neither.
+export circuit claim(campaignId: Bytes<32>): [] {
+  const id = disclose(campaignId);
+  assert(campaigns.member(id), "Unknown campaign");
+  const campaign = campaigns.lookup(id);
+  assert(campaign.active, "Campaign is not active");
+
+  const cred = credential();
+  assert(issuerApproved(disclose(cred.issuerId)), "Issuer is not approved");
+
+  const commitment = credentialCommitment(
+    cred.region,
+    cred.income,
+    cred.householdSize,
+    cred.nonce,
+    holderPublicKey(cred.holderSecret)
+  );
+  const leaf = credentialLeaf(cred.issuerId, commitment);
+  const path = credentialPath(leaf);
+  assert(disclose(path.leaf == leaf), "Credential path does not match credential");
+  assert(credentials.checkRoot(disclose(merkleTreePathRoot<16, Bytes<32>>(path))), "Credential was not issued");
+
+  assert(disclose(cred.region == campaign.requiredRegion), "Region requirement not met");
+  assert(disclose(cred.income <= campaign.maxIncome), "Income above campaign limit");
+  assert(disclose(cred.householdSize >= campaign.minHouseholdSize), "Household below campaign minimum");
+
+  const nullifier = disclose(claimNullifier(deploymentSalt, id, holderBinding(cred.holderSecret, commitment)));
+  assert(!consumedNullifiers.member(nullifier), "Credential already claimed for this campaign");
+
+  consumedNullifiers.insert(nullifier);
+  campaigns.insert(id, Campaign { ...campaign, claimCount: campaign.claimCount + 1 as Uint<64> });
+}
+
 circuit assertAdmin(): [] {
   assert(disclose(adminPublicKey(adminSecretKey()) == admin), "Caller is not the admin");
 }
@@ -110,4 +157,14 @@ export pure circuit credentialCommitment(
 
 export pure circuit credentialLeaf(issuerId: Bytes<32>, commitment: Bytes<32>): Bytes<32> {
   return persistentHash<Vector<3, Bytes<32>>>([pad(32, "proof-relief:leaf:v1"), issuerId, commitment]);
+}
+
+export pure circuit holderBinding(holderSecret: Bytes<32>, commitment: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([pad(32, "proof-relief:holder:v1"), holderSecret, commitment]);
+}
+
+// Same credential + same campaign + same deployment always gives the same nullifier.
+// No session, challenge or caller input is mixed in, so replays cannot vary it.
+export pure circuit claimNullifier(salt: Bytes<32>, campaignId: Bytes<32>, binding: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<4, Bytes<32>>>([pad(32, "proof-relief:claim:v1"), salt, campaignId, binding]);
 }

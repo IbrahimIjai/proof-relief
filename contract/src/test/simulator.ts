@@ -78,4 +78,14 @@ export class ProofReliefSimulator {
     this.context = this.contract.impureCircuits.issueCredential(this.context, commitment).context;
     return this.ledger();
   }
+
+  claim(campaignId: Uint8Array): Ledger {
+    this.context = this.contract.impureCircuits.claim(this.context, campaignId).context;
+    return this.ledger();
+  }
+
+  /** Full textual dump of the public contract state, as an indexer would see it. */
+  publicStateDump(): string {
+    return this.context.currentQueryContext.state.toString();
+  }
 }
