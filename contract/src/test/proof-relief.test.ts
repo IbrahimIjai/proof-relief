@@ -16,7 +16,7 @@ describe('ProofRelief deployment', () => {
   });
 
   it('stores the deployment salt', () => {
-    const state = new ProofReliefSimulator({ adminSecretKey }, bytes32(9)).ledger();
+    const state = new ProofReliefSimulator({ adminSecretKey }, { salt: bytes32(9) }).ledger();
 
     expect(state.deploymentSalt).toEqual(bytes32(9));
   });

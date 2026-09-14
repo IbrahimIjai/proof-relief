@@ -32,6 +32,41 @@ constructor(salt: Bytes<32>) {
   deploymentSalt = disclose(salt);
 }
 
+export circuit createCampaign(
+  campaignId: Bytes<32>,
+  requiredRegion: Bytes<32>,
+  maxIncome: Uint<64>,
+  minHouseholdSize: Uint<16>
+): [] {
+  assertAdmin();
+  const id = disclose(campaignId);
+  assert(!campaigns.member(id), "Campaign already exists");
+  assert(disclose(minHouseholdSize) > 0, "Minimum household size must be positive");
+  campaigns.insert(id, Campaign {
+    active: true,
+    requiredRegion: disclose(requiredRegion),
+    maxIncome: disclose(maxIncome),
+    minHouseholdSize: disclose(minHouseholdSize),
+    claimCount: 0
+  });
+}
+
+export circuit closeCampaign(campaignId: Bytes<32>): [] {
+  assertAdmin();
+  const id = disclose(campaignId);
+  assert(campaigns.member(id), "Unknown campaign");
+  campaigns.insert(id, Campaign { ...campaigns.lookup(id), active: false });
+}
+
+export circuit setIssuerStatus(issuerId: Bytes<32>, approved: Boolean): [] {
+  assertAdmin();
+  approvedIssuers.insert(disclose(issuerId), disclose(approved));
+}
+
+circuit assertAdmin(): [] {
+  assert(disclose(adminPublicKey(adminSecretKey()) == admin), "Caller is not the admin");
+}
+
 export pure circuit adminPublicKey(sk: Bytes<32>): Bytes<32> {
   return persistentHash<Vector<2, Bytes<32>>>([pad(32, "proof-relief:admin:v1"), sk]);
 }
