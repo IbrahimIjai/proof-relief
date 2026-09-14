@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Private, one-claim-per-person aid eligibility proofs on Midnight",
   "license": "Apache-2.0",
+  "packageManager": "bun@1.3.14",
   "engines": {
     "node": ">=22.15"
   },
@@ -14,18 +15,15 @@
     "ui"
   ],
   "scripts": {
-    "compact": "npm run compact --workspace contract",
-    "build": "npm run build --workspace contract && npm run build --workspace ui",
-    "test": "npm run test --workspace contract",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "compact": "bun run --filter @proof-relief/contract compact",
+    "build": "bun run --filter @proof-relief/contract build && bun run --filter @proof-relief/ui build",
+    "test": "bun run --filter @proof-relief/contract test",
+    "typecheck": "bun run --filter '*' typecheck",
     "proof-server": "docker compose -f proof-server.yml up"
   },
   "devDependencies": {
     "@types/node": "^24.13.4",
     "typescript": "6.0.3",
     "vitest": "4.1.11"
-  },
-  "overrides": {
-    "smoldot": "npm:@aspect-build/empty@0.0.0"
   }
 }
