@@ -29,3 +29,8 @@ logs/
 .idea/
 .DS_Store
 *.log
+
+# Interface: ZK assets copied from the contract build, local env
+interface/public/keys/
+interface/public/zkir/
+interface/.env.local

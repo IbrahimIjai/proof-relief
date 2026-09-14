@@ -52,8 +52,15 @@
       "name": "@proof-relief/interface",
       "version": "0.1.0",
       "dependencies": {
+        "@midnight-ntwrk/compact-js": "2.5.1",
         "@midnight-ntwrk/dapp-connector-api": "4.0.1",
+        "@midnight-ntwrk/ledger-v8": "8.1.0",
+        "@midnight-ntwrk/midnight-js": "4.1.1",
+        "@midnight-ntwrk/midnight-js-fetch-zk-config-provider": "4.1.1",
+        "@midnight-ntwrk/midnight-js-http-client-proof-provider": "4.1.1",
+        "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.1.1",
         "@proof-relief/contract": "*",
+        "buffer": "6.0.3",
         "react": "19.3.0",
         "react-dom": "19.3.0",
       },
@@ -62,6 +69,7 @@
         "@types/react-dom": "19.3.0",
         "@vitejs/plugin-react": "6.1.1",
         "vite": "8.3.0",
+        "vite-plugin-wasm": "3.6.0",
       },
     },
   },
@@ -142,6 +150,8 @@
     "@midnight-ntwrk/midnight-js": ["@midnight-ntwrk/midnight-js@4.1.1", "", { "dependencies": { "@midnight-ntwrk/midnight-js-contracts": "4.1.1", "@midnight-ntwrk/midnight-js-network-id": "4.1.1", "@midnight-ntwrk/midnight-js-protocol": "4.1.1", "@midnight-ntwrk/midnight-js-types": "4.1.1", "@midnight-ntwrk/midnight-js-utils": "4.1.1" } }, "sha512-n6g3+NA3umlZ0FT/lU7VktKyhaYcJsrh3Jcr50pHkUZw5wMqy0gncWZklQmp8qU8F6/igy5LywKZ30PIL3wOHA=="],
 
     "@midnight-ntwrk/midnight-js-contracts": ["@midnight-ntwrk/midnight-js-contracts@4.1.1", "", { "dependencies": { "@midnight-ntwrk/midnight-js-network-id": "4.1.1", "@midnight-ntwrk/midnight-js-protocol": "4.1.1", "@midnight-ntwrk/midnight-js-types": "4.1.1", "@midnight-ntwrk/midnight-js-utils": "4.1.1" } }, "sha512-vHeKyaj9RXTx+Cep3YpIRgg2EWkzibO4gxI7k/rYpXmGXc3waetrR5sb9FPR7v9SUX00/zf/sYbLp1NZhwZbjg=="],
+
+    "@midnight-ntwrk/midnight-js-fetch-zk-config-provider": ["@midnight-ntwrk/midnight-js-fetch-zk-config-provider@4.1.1", "", { "dependencies": { "@midnight-ntwrk/midnight-js-types": "4.1.1", "@midnight-ntwrk/midnight-js-utils": "4.1.1", "cross-fetch": "^4.1.0" } }, "sha512-d9vPAXjCvbe3KdPDBwp8Cp4HXwdo9jfCjeyJjJPfIDHCctXrIQ7btu+CqY1+bgV05FHVMOBLjJ9TS2tc2xdwrw=="],
 
     "@midnight-ntwrk/midnight-js-http-client-proof-provider": ["@midnight-ntwrk/midnight-js-http-client-proof-provider@4.1.1", "", { "dependencies": { "@midnight-ntwrk/midnight-js-contracts": "4.1.1", "@midnight-ntwrk/midnight-js-network-id": "4.1.1", "@midnight-ntwrk/midnight-js-protocol": "4.1.1", "@midnight-ntwrk/midnight-js-types": "4.1.1", "@midnight-ntwrk/midnight-js-utils": "4.1.1", "cross-fetch": "^4.1.0", "fetch-retry": "^6.0.0" } }, "sha512-Q2VNRTvuWlf3MbjV7C3asuLHeFwtZMdh6t5Z+u8c8RDpejW9GhKaSjlJ2zgJII5ckE8/cocPEDwt3GKBebGHWA=="],
 
@@ -610,6 +620,8 @@
     "undici-types": ["undici-types@7.18.2", "", {}, "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w=="],
 
     "vite": ["vite@8.3.0", "", { "dependencies": { "lightningcss": "^1.33.0", "picomatch": "^4.0.7", "postcss": "^8.5.28", "rolldown": "~1.2.6", "tinyglobby": "^0.2.17" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "@vitejs/devtools": "^0.7.1", "esbuild": "^0.27.0 || ^0.28.0", "jiti": ">=1.21.0", "less": "^4.0.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "@vitejs/devtools", "esbuild", "jiti", "less", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-lhZBVvEHefgE+HQZC9O7EBJgCU/nVzFNl7vkS4RE0APtWLP02/8QVIkQtzBxPquh7lq5/78NHipTj7ODQ6XuyQ=="],
+
+    "vite-plugin-wasm": ["vite-plugin-wasm@3.6.0", "", { "peerDependencies": { "vite": "^2 || ^3 || ^4 || ^5 || ^6 || ^7 || ^8" } }, "sha512-mL/QPziiIA4RAA6DkaZZzOstdwbW5jO4Vz7Zenj0wieKWBlNvIvX5L5ljum9lcUX0ShNfBgCNLKTjNkRVVqcsw=="],
 
     "vitest": ["vitest@4.1.11", "", { "dependencies": { "@vitest/expect": "4.1.11", "@vitest/mocker": "4.1.11", "@vitest/pretty-format": "4.1.11", "@vitest/runner": "4.1.11", "@vitest/snapshot": "4.1.11", "@vitest/spy": "4.1.11", "@vitest/utils": "4.1.11", "es-module-lexer": "^2.0.0", "expect-type": "^1.3.0", "magic-string": "^0.30.21", "obug": "^2.1.1", "pathe": "^2.0.3", "picomatch": "^4.0.3", "std-env": "^4.0.0-rc.1", "tinybench": "^2.9.0", "tinyexec": "^1.0.2", "tinyglobby": "^0.2.15", "tinyrainbow": "^3.1.0", "vite": "^6.0.0 || ^7.0.0 || ^8.0.0", "why-is-node-running": "^2.3.0" }, "peerDependencies": { "@edge-runtime/vm": "*", "@opentelemetry/api": "^1.9.0", "@types/node": "^20.0.0 || ^22.0.0 || >=24.0.0", "@vitest/browser-playwright": "4.1.11", "@vitest/browser-preview": "4.1.11", "@vitest/browser-webdriverio": "4.1.11", "@vitest/coverage-istanbul": "4.1.11", "@vitest/coverage-v8": "4.1.11", "@vitest/ui": "4.1.11", "happy-dom": "*", "jsdom": "*" }, "optionalPeers": ["@edge-runtime/vm", "@opentelemetry/api", "@types/node", "@vitest/browser-playwright", "@vitest/browser-preview", "@vitest/browser-webdriverio", "@vitest/coverage-istanbul", "@vitest/coverage-v8", "@vitest/ui", "happy-dom", "jsdom"], "bin": { "vitest": "./vitest.mjs" } }, "sha512-fhACrNXUidIbGSBr5FlbuBkO7VWC1ZyLl0DO4CU2DrQoAPxX84Ysxs+HeGQpii5lZWV1Q4gBZTTu49mF+A6Edw=="],
 

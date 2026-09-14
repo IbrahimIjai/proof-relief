@@ -1,9 +1,10 @@
 import { randomBytes } from 'node:crypto';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js/contracts';
-import { ProofRelief } from '@proof-relief/contract';
+import { ProofRelief, credentialCommitmentOf, decodeLabel, encodeLabel as label } from '@proof-relief/contract';
 import { type NetworkName, networks, useNetwork } from './config.js';
 import { PRIVATE_STATE_ID, type ProofReliefHandle, type ProofReliefProviders, compiledContract } from './contract.js';
 import {
+  credentialPath,
   fromHex,
   loadCredential,
   loadDeployment,
@@ -22,14 +23,6 @@ const DEMO_CAMPAIGN = {
   maxIncome: 100_000n,
   minHouseholdSize: 4n,
 };
-
-const label = (text: string): Uint8Array => {
-  const bytes = new Uint8Array(32);
-  bytes.set(new TextEncoder().encode(text));
-  return bytes;
-};
-
-const decodeLabel = (bytes: Uint8Array): string => new TextDecoder().decode(bytes).replace(/\0+$/, '');
 
 const usage = `
 Usage: bun run relief <command> [args] [--network standalone|preprod|preview]
@@ -138,18 +131,13 @@ const commands: Record<string, (providers: ProofReliefProviders, network: Networ
       nonce: randomBytes(32),
       issuerId: ProofRelief.pureCircuits.issuerPublicKey(issuerSecretKey),
     };
-    const commitment = ProofRelief.pureCircuits.credentialCommitment(
-      credential.region,
-      credential.income,
-      credential.householdSize,
-      credential.nonce,
-      ProofRelief.pureCircuits.holderPublicKey(credential.holderSecret),
-    );
+    const commitment = credentialCommitmentOf(credential);
 
     await providers.privateStateProvider.set(PRIVATE_STATE_ID, { issuerSecretKey });
     const tx = await step(`Issuing credential for ${name}`, () => contract.callTx.issueCredential(commitment));
     saveCredential(network, name, credential);
     printTx(`Credential commitment ${toHex(commitment)} issued`, tx.public);
+    console.log(`  Credential file for ${name}: ${credentialPath(network, name)}`);
   },
 
   async claim(providers, network, [name, campaign = DEMO_CAMPAIGN.id]) {
