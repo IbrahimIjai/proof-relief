@@ -1,0 +1,30 @@
+# Private planning docs
+doc.md
+BUILD_BRIEF.md
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+coverage/
+**/reports/
+
+# Compact compiler output (regenerate with `npm run compact`)
+managed/
+
+# Midnight local state
+midnight-level-db/
+logs/
+
+# Environment
+.env
+*.env
+!*.env.example
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.log

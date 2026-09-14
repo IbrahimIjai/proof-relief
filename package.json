@@ -1,0 +1,31 @@
+{
+  "name": "proof-relief",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Private, one-claim-per-person aid eligibility proofs on Midnight",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.15"
+  },
+  "workspaces": [
+    "contract",
+    "cli",
+    "ui"
+  ],
+  "scripts": {
+    "compact": "npm run compact --workspace contract",
+    "build": "npm run build --workspace contract && npm run build --workspace ui",
+    "test": "npm run test --workspace contract",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "proof-server": "docker compose -f proof-server.yml up"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.4",
+    "typescript": "6.0.3",
+    "vitest": "4.1.11"
+  },
+  "overrides": {
+    "smoldot": "npm:@aspect-build/empty@0.0.0"
+  }
+}
