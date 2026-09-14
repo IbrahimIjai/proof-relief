@@ -18,7 +18,7 @@
     "compact": "bun run --filter @proof-relief/contract compact",
     "build": "bun run --filter @proof-relief/contract build && bun run --filter @proof-relief/interface build",
     "test": "bun run --filter @proof-relief/contract test",
-    "typecheck": "bun run --filter '*' typecheck",
+    "typecheck": "bun run --filter @proof-relief/contract build && bun run --filter '*' typecheck",
     "proof-server": "docker compose -f proof-server.yml up -d",
     "relief": "bun run --cwd cli start",
     "standalone:up": "bun run --cwd cli standalone:up",
