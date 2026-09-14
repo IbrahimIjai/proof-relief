@@ -1,0 +1,37 @@
+// ProofRelief: private aid eligibility with one claim per credential per campaign.
+//
+// Public ledger holds only campaign rules, issuer status, claim counts and
+// consumed nullifiers. Beneficiary attributes never leave the prover.
+
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+export struct Campaign {
+  active: Boolean;
+  requiredRegion: Bytes<32>;
+  maxIncome: Uint<64>;
+  minHouseholdSize: Uint<16>;
+  claimCount: Uint<64>;
+}
+
+// Commitment to the admin secret key. Admin circuits re-derive and compare it.
+export ledger admin: Bytes<32>;
+
+// Random per-deployment value that domain-separates nullifiers.
+export ledger deploymentSalt: Bytes<32>;
+
+export ledger campaigns: Map<Bytes<32>, Campaign>;
+export ledger approvedIssuers: Map<Bytes<32>, Boolean>;
+export ledger consumedNullifiers: Set<Bytes<32>>;
+
+witness adminSecretKey(): Bytes<32>;
+
+constructor(salt: Bytes<32>) {
+  admin = disclose(adminPublicKey(adminSecretKey()));
+  deploymentSalt = disclose(salt);
+}
+
+export pure circuit adminPublicKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "proof-relief:admin:v1"), sk]);
+}
