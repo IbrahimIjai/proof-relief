@@ -23,11 +23,16 @@ type Attributes = { region: Uint8Array; income: bigint; householdSize: bigint };
 let nextSeed = 100;
 
 /** Builds a fresh beneficiary credential with its own holder secret and nonce. */
-export const makeCredential = (attributes: Attributes, from: Uint8Array = issuerId): Credential => ({
+export const makeCredential = (
+  { region, income, householdSize }: Attributes,
+  from: Uint8Array = issuerId,
+): Credential => ({
   holderSecret: bytes32(nextSeed++),
   nonce: bytes32(nextSeed++),
   issuerId: from,
-  ...attributes,
+  region,
+  income,
+  householdSize,
 });
 
 export const commitmentOf = (credential: Credential): Uint8Array =>

@@ -30,7 +30,7 @@ describe('issuer and credential integrity', () => {
 
   it('rejects a credential naming an issuer that is not approved', () => {
     const sim = deployWorld();
-    const credential = makeCredential({ ...alice(), issuerId: rogueIssuerId } as never, rogueIssuerId);
+    const credential = makeCredential(alice(), rogueIssuerId);
 
     expect(() => sim.as(beneficiary(credential)).claim(floodRelief)).toThrow(/Issuer is not approved/);
   });
