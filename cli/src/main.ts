@@ -152,8 +152,10 @@ const commands: Record<string, (providers: ProofReliefProviders, network: Networ
       console.log('\n  ✓ Eligibility verified\n  ✓ Claim recorded\n  ✓ Sensitive data remained private\n');
       printTx('Claim transaction', tx.public);
     } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error);
-      console.log(`\n  ✗ Claim rejected: ${reason}\n`);
+      const message = error instanceof Error ? error.message : String(error);
+      const reason = /failed assert: (.*)$/.exec(message)?.[1] ?? message;
+      console.log(`\n  ✗ Claim rejected by the contract: ${reason}`);
+      console.log('    No proof was submitted, no nullifier was consumed, and the claim count is unchanged.\n');
       process.exitCode = 2;
     } finally {
       await providers.privateStateProvider.set(PRIVATE_STATE_ID, {});

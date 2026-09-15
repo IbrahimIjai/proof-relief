@@ -58,7 +58,8 @@ code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.85em
 .stat .big { font-size: 3.5rem; font-weight: 700; margin: 8px 0; color: var(--accent); }
 
 .facts { list-style: none; padding: 0; margin: 12px 0; }
-.facts li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.facts li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.facts code { font-size: 1rem; font-weight: 600; }
 
 .file { display: inline-block; margin: 8px 0 16px; }
 .file input { display: none; }
