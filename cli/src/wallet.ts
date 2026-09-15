@@ -53,6 +53,26 @@ const deriveKeys = (seed: string) => {
 const synced = (wallet: WalletFacade) =>
   Rx.firstValueFrom(wallet.state().pipe(Rx.throttleTime(2_000), Rx.filter((s) => s.isSynced)));
 
+const percent = ({ appliedIndex, highestRelevantWalletIndex: target }: { appliedIndex: bigint; highestRelevantWalletIndex: bigint }) =>
+  target > 0n ? `${(appliedIndex * 100n) / target}% (${appliedIndex}/${target})` : 'connecting';
+
+/** A first sync on a public network scans the whole chain, so show where it is. */
+const syncedWithProgress = async (wallet: WalletFacade) => {
+  const reporter = wallet
+    .state()
+    .pipe(Rx.throttleTime(20_000))
+    .subscribe((s) => {
+      if (!s.isSynced) {
+        process.stdout.write(`    shielded ${percent(s.shielded.progress)} · dust ${percent(s.dust.progress)}\n`);
+      }
+    });
+  try {
+    return await synced(wallet);
+  } finally {
+    reporter.unsubscribe();
+  }
+};
+
 /**
  * NIGHT only pays fees after its UTXOs are registered for DUST generation.
  * Registers any unregistered UTXOs, then waits until DUST is spendable.
@@ -105,7 +125,7 @@ export const buildWallet = async (config: NetworkConfig, seed: string): Promise<
   await wallet.start(shieldedSecretKeys, dustSecretKey);
 
   console.log(`\n  Wallet address (fund with tNight): ${unshieldedKeystore.getBech32Address()}\n`);
-  const state = await step('Syncing wallet', () => synced(wallet));
+  const state = await step('Syncing wallet', () => syncedWithProgress(wallet));
 
   if ((state.unshielded.balances[unshieldedToken().raw] ?? 0n) === 0n) {
     await step('Waiting for tNight (use the faucet for Preprod)', () =>
