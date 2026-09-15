@@ -111,6 +111,7 @@ ProofRelief proves that **hidden values were attested by an approved issuer and 
 | [`contract/`](contract/) | Compact contract, TypeScript witnesses, credential helpers, simulator and 59 tests |
 | [`cli/`](cli/) | Deploy, setup, issue, claim and state commands using Midnight.js and the wallet SDK |
 | [`interface/`](interface/) | React + Vite app: Campaign screen (live public state) and Beneficiary screen (Lace wallet claim) |
+| [`DEPLOYMENT.md`](DEPLOYMENT.md) | Transaction evidence from real runs with ZK proofs |
 | [`proof-server.yml`](proof-server.yml) | Midnight proof server 8.1.0 |
 | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Compile with ZK keys, typecheck, test and build |
 
@@ -208,7 +209,7 @@ Load a credential file from `cli/.state/<network>/credentials/` on the Beneficia
 2. **See the adversarial tests:** [`credential.test.ts`](contract/src/test/credential.test.ts) (lying prover, tampering) and [`atomicity.test.ts`](contract/src/test/atomicity.test.ts) (byte-for-byte unchanged state on failure).
 3. **Run** `bun install && bun run compact && bun run test`.
 4. **Check the privacy claim** in [`privacy.test.ts`](contract/src/test/privacy.test.ts), which inspects the serialized public state.
-5. **Run the demo** from the end-to-end section: Alice accepted, Alice replay rejected, Bob rejected, public state inspected.
+5. **Check the evidence** in [`DEPLOYMENT.md`](DEPLOYMENT.md), or run the demo yourself from the end-to-end section: Alice accepted, Alice replay rejected, Bob rejected, public state inspected.
 
 ---
 
