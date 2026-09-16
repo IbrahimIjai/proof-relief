@@ -4,7 +4,7 @@
 
 ProofRelief is a stateful private aid-claim protocol on [Midnight](https://midnight.network). An approved issuer attests a beneficiary's hidden facts (region, income, household size). The beneficiary proves in zero knowledge that those facts satisfy a campaign's public rules, and the Midnight contract enforces **one claim per credential per campaign** through a campaign-scoped nullifier. Anyone can audit the rules and the claim count. Nobody can see who claimed or what they earn.
 
-[![CI](https://github.com/IbrahimIjai/proof-relief-/actions/workflows/ci.yml/badge.svg)](https://github.com/IbrahimIjai/proof-relief-/actions/workflows/ci.yml)
+[![CI](https://github.com/IbrahimIjai/proof-relief/actions/workflows/ci.yml/badge.svg)](https://github.com/IbrahimIjai/proof-relief/actions/workflows/ci.yml)
 
 ---
 
