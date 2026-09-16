@@ -22,6 +22,7 @@ import {
 import * as Rx from 'rxjs';
 import { WebSocket } from 'ws';
 import { type NetworkConfig, contractConfig } from './config.js';
+import { type WalletStateSnapshot, loadWalletState, saveWalletState } from './store.js';
 import type { ProofReliefCircuits, ProofReliefProviders } from './contract.js';
 
 // The indexer client expects a global WebSocket in Node.
@@ -56,20 +57,36 @@ const synced = (wallet: WalletFacade) =>
 const percent = ({ appliedIndex, highestRelevantWalletIndex: target }: { appliedIndex: bigint; highestRelevantWalletIndex: bigint }) =>
   target > 0n ? `${(appliedIndex * 100n) / target}% (${appliedIndex}/${target})` : 'connecting';
 
-/** A first sync on a public network scans the whole chain, so show where it is. */
-const syncedWithProgress = async (wallet: WalletFacade) => {
+/** Serializes all three sub-wallets so the next run resumes instead of rescanning. */
+export const snapshotWallet = async (wallet: WalletFacade, network: string): Promise<void> => {
+  const [shielded, unshielded, dust] = await Promise.all([
+    wallet.shielded.serializeState(),
+    wallet.unshielded.serializeState(),
+    wallet.dust.serializeState(),
+  ]);
+  saveWalletState(network, { shielded, unshielded, dust } satisfies WalletStateSnapshot);
+};
+
+/**
+ * A first sync on a public network replays every zswap and DUST ledger event, which takes
+ * far longer than the run itself. Report progress and checkpoint it so an interrupted run
+ * resumes where it stopped.
+ */
+const syncedWithProgress = async (wallet: WalletFacade, network: string) => {
+  let saving = Promise.resolve();
   const reporter = wallet
     .state()
-    .pipe(Rx.throttleTime(20_000))
+    .pipe(Rx.throttleTime(30_000))
     .subscribe((s) => {
-      if (!s.isSynced) {
-        process.stdout.write(`    shielded ${percent(s.shielded.progress)} · dust ${percent(s.dust.progress)}\n`);
-      }
+      if (s.isSynced) return;
+      process.stdout.write(`    shielded ${percent(s.shielded.progress)} · dust ${percent(s.dust.progress)}\n`);
+      saving = saving.then(() => snapshotWallet(wallet, network)).catch(() => undefined);
     });
   try {
     return await synced(wallet);
   } finally {
     reporter.unsubscribe();
+    await saving;
   }
 };
 
@@ -109,6 +126,8 @@ export const buildWallet = async (config: NetworkConfig, seed: string): Promise<
   const unshieldedKeystore = createKeystore(keys[Roles.NightExternal], getNetworkId());
 
   const indexerClientConnection = { indexerHttpUrl: config.indexer, indexerWsUrl: config.indexerWS };
+  const saved = loadWalletState(config.networkId);
+  if (saved) console.log('  Resuming from saved wallet state');
   const wallet = await WalletFacade.init({
     configuration: {
       networkId: getNetworkId(),
@@ -118,14 +137,21 @@ export const buildWallet = async (config: NetworkConfig, seed: string): Promise<
       txHistoryStorage: new InMemoryTransactionHistoryStorage(WalletEntrySchema),
       costParameters: { additionalFeeOverhead: 300_000_000_000_000n, feeBlocksMargin: 5 },
     },
-    shielded: (cfg) => ShieldedWallet(cfg).startWithSecretKeys(shieldedSecretKeys),
-    unshielded: (cfg) => UnshieldedWallet(cfg).startWithPublicKey(PublicKey.fromKeyStore(unshieldedKeystore)),
-    dust: (cfg) => DustWallet(cfg).startWithSecretKey(dustSecretKey, ledger.LedgerParameters.initialParameters().dust),
+    shielded: (cfg) =>
+      saved ? ShieldedWallet(cfg).restore(saved.shielded) : ShieldedWallet(cfg).startWithSecretKeys(shieldedSecretKeys),
+    unshielded: (cfg) =>
+      saved
+        ? UnshieldedWallet(cfg).restore(saved.unshielded)
+        : UnshieldedWallet(cfg).startWithPublicKey(PublicKey.fromKeyStore(unshieldedKeystore)),
+    dust: (cfg) =>
+      saved
+        ? DustWallet(cfg).restore(saved.dust)
+        : DustWallet(cfg).startWithSecretKey(dustSecretKey, ledger.LedgerParameters.initialParameters().dust),
   });
   await wallet.start(shieldedSecretKeys, dustSecretKey);
 
   console.log(`\n  Wallet address (fund with tNight): ${unshieldedKeystore.getBech32Address()}\n`);
-  const state = await step('Syncing wallet', () => syncedWithProgress(wallet));
+  const state = await step('Syncing wallet', () => syncedWithProgress(wallet, config.networkId));
 
   if ((state.unshielded.balances[unshieldedToken().raw] ?? 0n) === 0n) {
     await step('Waiting for tNight (use the faucet for Preprod)', () =>

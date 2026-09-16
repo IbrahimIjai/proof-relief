@@ -13,7 +13,7 @@ import {
   saveDeployment,
   toHex,
 } from './store.js';
-import { buildProviders, buildWallet, step } from './wallet.js';
+import { buildProviders, buildWallet, snapshotWallet, step } from './wallet.js';
 
 const GENESIS_SEED = '0000000000000000000000000000000000000000000000000000000000000001';
 
@@ -50,12 +50,15 @@ const parseArgs = (argv: string[]) => {
   return { command, args, network };
 };
 
-const connect = async (network: NetworkName): Promise<ProofReliefProviders> => {
+const connect = async (network: NetworkName): Promise<{ providers: ProofReliefProviders; save: () => Promise<void> }> => {
   const config = useNetwork(network);
   const seed =
     network === 'standalone' ? GENESIS_SEED : loadOrCreateSeed(network, () => randomBytes(32).toString('hex'));
   const wallet = await buildWallet(config, seed);
-  return buildProviders(wallet, config);
+  return {
+    providers: await buildProviders(wallet, config),
+    save: () => snapshotWallet(wallet.wallet, config.networkId),
+  };
 };
 
 const join = (providers: ProofReliefProviders, network: string): Promise<ProofReliefHandle> =>
@@ -190,8 +193,13 @@ const main = async () => {
     process.exitCode = command ? 1 : 0;
     return;
   }
-  const providers = await connect(network);
-  await run(providers, network, args);
+  const { providers, save } = await connect(network);
+  try {
+    await run(providers, network, args);
+  } finally {
+    // Keep the synced wallet state so the next command starts immediately.
+    await save().catch(() => undefined);
+  }
 };
 
 main()

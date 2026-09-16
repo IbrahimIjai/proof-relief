@@ -48,6 +48,24 @@ export const loadCredential = (network: string, name: string): ProofRelief.Crede
   return decodeCredential(stored);
 };
 
+/** Serialized sync state of the three sub-wallets, so a rerun resumes instead of rescanning. */
+export type WalletStateSnapshot = {
+  shielded: string;
+  unshielded: string;
+  dust: string;
+};
+
+export const saveWalletState = (network: string, snapshot: WalletStateSnapshot) =>
+  writeFileSync(file(network, 'wallet-state.json'), JSON.stringify(snapshot), { mode: 0o600 });
+
+export const loadWalletState = (network: string): WalletStateSnapshot | undefined => {
+  try {
+    return readJson<WalletStateSnapshot>(file(network, 'wallet-state.json'));
+  } catch {
+    return undefined; // A corrupt or outdated snapshot just means a full resync.
+  }
+};
+
 export const loadOrCreateSeed = (network: string, create: () => string): string => {
   const target = file(network, 'wallet-seed');
   if (!existsSync(target)) writeFileSync(target, `${create()}\n`, { mode: 0o600 });
