@@ -6,6 +6,10 @@ ProofRelief is a stateful private aid-claim protocol on [Midnight](https://midni
 
 [![CI](https://github.com/IbrahimIjai/proof-relief/actions/workflows/ci.yml/badge.svg)](https://github.com/IbrahimIjai/proof-relief/actions/workflows/ci.yml)
 
+**Live on Midnight Preview:** contract `07af9a3a721692b60ed87a3515ff93e597962ace40284fd7e9e561be6536f649`.
+A real claim was proven and verified on the public network in block 887325, a replay was rejected,
+and an over-limit claim was rejected. Transaction hashes: [`DEPLOYMENT.md`](DEPLOYMENT.md).
+
 ---
 
 ## Why this needs Midnight
@@ -178,7 +182,7 @@ Compact compiler can build the site. Set these environment variables on the host
 | Variable | Example |
 |---|---|
 | `VITE_NETWORK_ID` | `preview` |
-| `VITE_CONTRACT_ADDRESS` | address printed by `relief deploy` |
+| `VITE_CONTRACT_ADDRESS` | `07af9a3a721692b60ed87a3515ff93e597962ace40284fd7e9e561be6536f649` |
 | `VITE_CAMPAIGN_ID` | `borno-flood-relief` |
 | `VITE_CAMPAIGN_NAME` | `Borno Flood Relief` |
 | `VITE_INDEXER_URI` | `https://indexer.preview.midnight.network/api/v3/graphql` |
