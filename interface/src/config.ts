@@ -1,12 +1,14 @@
 import type { NetworkId } from '@midnight-ntwrk/midnight-js/network-id';
 
-const env = import.meta.env;
-
+/**
+ * The deployed ProofRelief demo. These are fixed for the hosted app, so it needs no
+ * configuration to run. Point them at another deployment by editing this file.
+ */
 export const config = {
-  networkId: (env.VITE_NETWORK_ID ?? 'preprod') as NetworkId,
-  contractAddress: env.VITE_CONTRACT_ADDRESS ?? '',
-  campaignId: env.VITE_CAMPAIGN_ID ?? 'borno-flood-relief',
-  campaignName: env.VITE_CAMPAIGN_NAME ?? 'Borno Flood Relief',
-  indexerUri: env.VITE_INDEXER_URI ?? 'https://indexer.preprod.midnight.network/api/v3/graphql',
-  indexerWsUri: env.VITE_INDEXER_WS_URI ?? 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws',
+  networkId: 'preview' as NetworkId,
+  contractAddress: '07af9a3a721692b60ed87a3515ff93e597962ace40284fd7e9e561be6536f649',
+  campaignId: 'borno-flood-relief',
+  campaignName: 'Borno Flood Relief',
+  indexerUri: 'https://indexer.preview.midnight.network/api/v3/graphql',
+  indexerWsUri: 'wss://indexer.preview.midnight.network/api/v3/graphql/ws',
 };

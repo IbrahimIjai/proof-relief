@@ -29,7 +29,6 @@ const fromHex = (hex: string) => Uint8Array.from(hex.match(/../g) ?? [], (b) => 
 
 /** Reads public contract state without a wallet. */
 export const fetchLedger = async (): Promise<ProofRelief.Ledger | null> => {
-  if (!config.contractAddress) return null;
   const state = await indexerPublicDataProvider(config.indexerUri, config.indexerWsUri, browserWebSocket).queryContractState(
     config.contractAddress,
   );

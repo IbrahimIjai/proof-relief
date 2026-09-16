@@ -162,31 +162,25 @@ bun run relief claim bob                    # rejected: income above limit
 bun run relief state                        # only rules, count and nullifiers are public
 ```
 
-Append `--network preprod` to any command to use Midnight Preprod. The first run prints a wallet address to fund from the [Preprod faucet](https://faucet.preprod.midnight.network/). Secrets and credential files are stored in `cli/.state/` (gitignored).
+Append `--network preview` (or `--network preprod`) to any command to use a public network. The first run prints a wallet address to fund from that network's faucet, for example the [Preview faucet](https://faucet.preview.midnight.network/). Secrets and credential files are stored in `cli/.state/` (gitignored).
 
 ### Interface
 
 ```sh
-cp interface/.env.example interface/.env.local   # set VITE_CONTRACT_ADDRESS
 bun run --filter @proof-relief/interface dev
 ```
 
-Load a credential file from `cli/.state/<network>/credentials/` on the Beneficiary screen and click **Generate Private Proof** with the Midnight Lace wallet installed.
+It reads the deployed Preview contract out of the box. Load a credential file from
+`cli/.state/<network>/credentials/` on the Beneficiary screen and click **Generate Private Proof**
+with the Midnight Lace wallet installed.
 
 ### Hosting the interface
 
-[`vercel.json`](vercel.json) builds the workspace and publishes `interface/dist`. The generated
-contract bindings and the claim circuit's proving artifacts are committed, so a host without the
-Compact compiler can build the site. Set these environment variables on the host:
-
-| Variable | Example |
-|---|---|
-| `VITE_NETWORK_ID` | `preview` |
-| `VITE_CONTRACT_ADDRESS` | `07af9a3a721692b60ed87a3515ff93e597962ace40284fd7e9e561be6536f649` |
-| `VITE_CAMPAIGN_ID` | `borno-flood-relief` |
-| `VITE_CAMPAIGN_NAME` | `Borno Flood Relief` |
-| `VITE_INDEXER_URI` | `https://indexer.preview.midnight.network/api/v3/graphql` |
-| `VITE_INDEXER_WS_URI` | `wss://indexer.preview.midnight.network/api/v3/graphql/ws` |
+[`vercel.json`](vercel.json) builds the workspace and publishes `interface/dist`, with no
+environment variables to set: the network, contract address and campaign live in
+[`interface/src/config.ts`](interface/src/config.ts). The generated contract bindings and the claim
+circuit's proving artifacts are committed, so a host without the Compact compiler can build the
+site. Point the app at a different deployment by editing that one file.
 
 Claiming from the hosted site needs the Midnight Lace wallet, which supplies its own proof server
 and indexer. The Campaign screen works without a wallet.

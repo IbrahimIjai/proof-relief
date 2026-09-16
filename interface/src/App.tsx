@@ -60,9 +60,6 @@ export const App = () => {
         </nav>
       </header>
 
-      {!config.contractAddress && (
-        <p className="notice">Set VITE_CONTRACT_ADDRESS in interface/.env.local to point at a deployed contract.</p>
-      )}
       {error && <p className="notice error">Could not read public state: {error}</p>}
 
       {screen === 'campaign' ? (
@@ -123,7 +120,7 @@ const CampaignScreen = ({ ledger, campaign }: { ledger: ProofRelief.Ledger | nul
       </ul>
       <p className="muted small">
         No names, incomes, household sizes, holder secrets or reusable IDs are stored. Contract{' '}
-        <code>{config.contractAddress || 'not configured'}</code>
+        <code>{config.contractAddress}</code>
       </p>
     </section>
   </main>
@@ -194,7 +191,7 @@ const BeneficiaryScreen = ({ campaign, onClaimed }: { campaign?: ProofRelief.Cam
 
         <button
           className="primary"
-          disabled={!credential || !campaign || !config.contractAddress || claim.status === 'proving'}
+          disabled={!credential || !campaign || claim.status === 'proving'}
           onClick={() => void prove()}
         >
           {claim.status === 'proving' ? 'Generating private proof…' : 'Generate Private Proof'}
