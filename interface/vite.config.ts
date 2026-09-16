@@ -5,9 +5,6 @@ import wasm from 'vite-plugin-wasm';
 // The Midnight on-chain runtime ships as a WASM ES module; esnext keeps its top-level await.
 export default defineConfig({
   build: {
-    // Repo-root dist: the default output directory hosts look for.
-    outDir: '../dist',
-    emptyOutDir: true,
     target: 'esnext',
     rollupOptions: {
       output: {
