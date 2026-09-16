@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "zk-assets": "rm -rf public/keys public/zkir && mkdir -p public && cp -r ../contract/src/managed/proof-relief/keys ../contract/src/managed/proof-relief/zkir public/",
+    "zk-assets": "node scripts/copy-zk-assets.mjs",
     "dev": "bun run zk-assets && vite",
     "build": "tsc -p tsconfig.json --noEmit && bun run zk-assets && vite build",
     "preview": "vite preview",

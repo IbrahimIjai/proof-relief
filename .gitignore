@@ -10,8 +10,12 @@ build/
 coverage/
 **/reports/
 
-# Compact compiler output (regenerate with `npm run compact`)
-managed/
+# Compact compiler output (regenerate with `bun run compact`), except the generated
+# TypeScript bindings, which hosts without the Compact compiler need in order to build.
+contract/src/managed/*
+!contract/src/managed/proof-relief/
+contract/src/managed/proof-relief/*
+!contract/src/managed/proof-relief/contract/
 
 # Midnight local state (wallet seeds, secrets, demo credentials)
 cli/.state/
@@ -30,7 +34,11 @@ logs/
 .DS_Store
 *.log
 
-# Interface: ZK assets copied from the contract build, local env
-interface/public/keys/
-interface/public/zkir/
+# Interface: ZK assets copied from the contract build, except the claim circuit's
+# artifacts, which the hosted app serves to the proof server.
+interface/public/keys/*
+interface/public/zkir/*
+!interface/public/keys/claim.prover
+!interface/public/keys/claim.verifier
+!interface/public/zkir/claim.bzkir
 interface/.env.local
