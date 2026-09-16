@@ -169,6 +169,24 @@ bun run --filter @proof-relief/interface dev
 
 Load a credential file from `cli/.state/<network>/credentials/` on the Beneficiary screen and click **Generate Private Proof** with the Midnight Lace wallet installed.
 
+### Hosting the interface
+
+[`vercel.json`](vercel.json) builds the workspace and publishes `interface/dist`. The generated
+contract bindings and the claim circuit's proving artifacts are committed, so a host without the
+Compact compiler can build the site. Set these environment variables on the host:
+
+| Variable | Example |
+|---|---|
+| `VITE_NETWORK_ID` | `preview` |
+| `VITE_CONTRACT_ADDRESS` | address printed by `relief deploy` |
+| `VITE_CAMPAIGN_ID` | `borno-flood-relief` |
+| `VITE_CAMPAIGN_NAME` | `Borno Flood Relief` |
+| `VITE_INDEXER_URI` | `https://indexer.preview.midnight.network/api/v3/graphql` |
+| `VITE_INDEXER_WS_URI` | `wss://indexer.preview.midnight.network/api/v3/graphql/ws` |
+
+Claiming from the hosted site needs the Midnight Lace wallet, which supplies its own proof server
+and indexer. The Campaign screen works without a wallet.
+
 ---
 
 ## Test suite
