@@ -154,7 +154,7 @@ export const buildWallet = async (config: NetworkConfig, seed: string): Promise<
   const state = await step('Syncing wallet', () => syncedWithProgress(wallet, config.networkId));
 
   if ((state.unshielded.balances[unshieldedToken().raw] ?? 0n) === 0n) {
-    await step('Waiting for tNight (use the faucet for Preprod)', () =>
+    await step(`Waiting for tNight at the address above (faucet.${config.networkId}.midnight.network)`, () =>
       Rx.firstValueFrom(
         wallet.state().pipe(
           Rx.throttleTime(10_000),
